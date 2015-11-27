@@ -7,7 +7,7 @@
 #include <sys/un.h>
 #include <err.h>
 
-NSString *PTUSBHubErrorDomain = @"PTUSBHubError";
+NSString * const PTUSBHubErrorDomain = @"PTUSBHubError";
 
 typedef uint32_t USBMuxPacketType;
 enum {
@@ -98,8 +98,8 @@ static void usbmux_packet_free(usbmux_packet_t *upacket) {
 }
 
 
-NSString *PTUSBDeviceDidAttachNotification = @"PTUSBDeviceDidAttachNotification";
-NSString *PTUSBDeviceDidDetachNotification = @"PTUSBDeviceDidDetachNotification";
+NSString * const PTUSBDeviceDidAttachNotification = @"PTUSBDeviceDidAttachNotification";
+NSString * const PTUSBDeviceDidDetachNotification = @"PTUSBDeviceDidDetachNotification";
 
 static NSString *kPlistPacketTypeListen = @"Listen";
 static NSString *kPlistPacketTypeConnect = @"Connect";
@@ -276,7 +276,7 @@ static NSString *kPlistPacketTypeConnect = @"Connect";
               bundleVersion, @"ClientVersionString",
               nil];
   } else {
-    packet = [NSDictionary dictionaryWithObjectsAndKeys:@"Listen", @"MessageType", nil];
+    packet = [NSDictionary dictionaryWithObjectsAndKeys:messageType, @"MessageType", nil];
   }
   
   if (payload) {
@@ -589,6 +589,8 @@ static NSString *kPlistPacketTypeConnect = @"Connect";
 #endif
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-getter-return-value"
 
 - (void)sendData:(NSData*)data callback:(void(^)(NSError*))callback {
   dispatch_data_t ddata = dispatch_data_create((const void*)data.bytes, data.length, queue_, ^{
@@ -598,6 +600,7 @@ static NSString *kPlistPacketTypeConnect = @"Connect";
   [self sendDispatchData:ddata callback:callback];
 }
 
+#pragma clang diagnostic pop
 
 - (void)readFromOffset:(off_t)offset length:(size_t)length callback:(void(^)(NSError *error, dispatch_data_t data))callback {
   dispatch_io_read(channel_, offset, length, queue_, ^(bool done, dispatch_data_t data, int _errno) {
